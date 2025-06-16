@@ -25,7 +25,7 @@ product = Product("Samsung Galaxy S23 Ultra",
                  5)
 ```                 
 
-## Category (Категория)
+### Category (Категория)
 
 Класс для работы с категориями товаров.
 
