@@ -1,5 +1,6 @@
 import pytest
 
+from src import product
 from src.product import Category, Product
 
 
@@ -49,7 +50,7 @@ def test_category(category_creation):
     product_1, product_2, category = category_creation
     assert category.name == "Смартфоны"
     assert category.description == "Описание категории"
-    assert len(category.products) == 2
+    assert len(category.product) == 2
     assert Category.category_count == 1
     assert Category.product_count == 2
 
@@ -71,10 +72,10 @@ def test_category_count():
     assert Category.product_count == 1
     assert category_1.name == "Смартфоны"
     assert category_1.description == "Описание категории"
-    assert len(category_1.products) == 2
+    assert len(category_1.product) == 2
     assert category_2.name == "Телевизоры"
     assert category_2.description == "Описание категории"
-    assert len(category_2.products) == 1
+    assert len(category_2.product) == 1
 
 
 def test_count_category():
@@ -85,8 +86,23 @@ def test_count_category():
 
 def test_category_empty_products():
     category = Category("Пустая категория", "Описание пустой категории", [])
-    assert len(category.products) == 0
+    assert len(category.product) == 0
     assert Category.product_count == 0
     assert Category.category_count == 1
     assert category.name == "Пустая категория"
     assert category.description == "Описание пустой категории"
+
+
+def test_set_correct_price():
+    product.price = 200000.0
+    assert product.price == 200000.0, "Цена изменена"
+
+
+def test_set_negative_price():
+    product.price = -10000
+    assert "Цена не должна быть нулевая или отрицательная"
+
+
+def test_set_zero_price():
+    product.price = 0
+    assert "Цена не должна быть нулевая или отрицательная"
