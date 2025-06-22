@@ -120,6 +120,7 @@ def test_add_product():
     result = product1 + product2
     assert result == 3360000
 
+
 def test_add_zero_quantity():
     product1 = Product("Iphone 15", "512GB, Gray space", 210000.0, 8)
     product2 = Product("Iphone 15", "512GB, Gray space", 210000.0, 0)
