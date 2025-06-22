@@ -106,3 +106,22 @@ def test_set_negative_price():
 def test_set_zero_price():
     product.price = 0
     assert "Цена не должна быть нулевая или отрицательная"
+
+
+def test_str_representation():
+    product = Product("Iphone 15", "512GB, Gray space", 210000.0, 8)
+    expected = "Iphone 15, 210000.0 руб. Остаток: 8 шт."
+    assert str(product) == expected
+
+
+def test_add_product():
+    product1 = Product("Iphone 15", "512GB, Gray space", 210000.0, 8)
+    product2 = Product("Iphone 15", "512GB, Gray space", 210000.0, 8)
+    result = product1 + product2
+    assert result == 3360000
+
+def test_add_zero_quantity():
+    product1 = Product("Iphone 15", "512GB, Gray space", 210000.0, 8)
+    product2 = Product("Iphone 15", "512GB, Gray space", 210000.0, 0)
+    result = product1 + product2
+    assert result == 1680000
