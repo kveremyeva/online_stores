@@ -1,7 +1,7 @@
 import pytest
 
 from src import product
-from src.product import Category, Product
+from src.product import Category, Product, LawnGrass, Smartphone
 
 
 @pytest.fixture
@@ -126,3 +126,34 @@ def test_add_zero_quantity():
     product2 = Product("Iphone 15", "512GB, Gray space", 210000.0, 0)
     result = product1 + product2
     assert result == 1680000
+
+
+def test_smartphone_creation():
+    # Создаем объект смартфона
+    smartphone = Smartphone("iPhone 15 Pro", "Флагманский смартфон",120000, 10, "Высокая",
+        "iPhone 15 Pro", 256, "Черный")
+
+    # Проверяем корректность установки атрибутов
+    assert smartphone.name == "iPhone 15 Pro"
+    assert smartphone.description == "Флагманский смартфон"
+    assert smartphone.quantity == 10
+    assert smartphone.efficiency == "Высокая"
+    assert smartphone.model == "iPhone 15 Pro"
+    assert smartphone.memory == 256
+    assert smartphone.color == "Черный"
+
+
+# Тесты для класса LawnGrass
+def test_lawn_grass_creation():
+    # Создаем объект газонной травы
+    grass = LawnGrass(
+        "Газонная трава Premium", "Высококачественная трава", 500,
+50, "Нидерланды", 14, "Зеленый")
+
+    # Проверяем корректность установки атрибутов
+    assert grass.name == "Газонная трава Premium"
+    assert grass.description == "Высококачественная трава"
+    assert grass.quantity == 50
+    assert grass.country == "Нидерланды"
+    assert grass.germination_period == 14
+    assert grass.color == "Зеленый"
