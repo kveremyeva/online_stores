@@ -42,6 +42,16 @@ class Product:
         quantity = new_product["quantity"]
         return cls(name, description, price, quantity)
 
+    def __str__(self):
+        return f"{self.name}, {self.__price} руб. Остаток: {self.quantity} шт."
+
+    def __add__(self, other):
+        """Метод возвращает результат сложения сумм всех товаров двух категорий"""
+        if isinstance(other, Product):
+            return (self.__price * self.quantity) + (other.__price * other.quantity)
+        else:
+            raise ValueError("Other не является объектом класса Product")
+
 
 class Category:
     """Класс для категорий"""
@@ -73,3 +83,6 @@ class Category:
             product_info = f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт."
             products_str.append(product_info)
         return products_str
+
+    def __str__(self):
+        return f"{self.name}, количество продуктов: {self.product_count} шт."
