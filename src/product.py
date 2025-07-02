@@ -47,11 +47,25 @@ class Product:
 
     def __add__(self, other):
         """Метод возвращает результат сложения сумм всех товаров двух категорий"""
-        if isinstance(other, Product):
+        if type(other) == type(self):
             return (self.__price * self.quantity) + (other.__price * other.quantity)
         else:
-            raise ValueError("Other не является объектом класса Product")
+            raise TypeError
 
+class Smartphone(Product):
+    def __init__(self, name, description, __price, quantity, efficiency, model, memory, color):
+        super().__init__(name, description, __price, quantity)
+        self.efficiency = efficiency
+        self.model = model
+        self.memory = memory
+        self.color = color
+
+class LawnGrass(Product):
+    def __init__(self, name, description, __price, quantity, country, germination_period, color):
+        super().__init__(name, description, __price, quantity)
+        self.country = country
+        self.germination_period = germination_period
+        self.color = color
 
 class Category:
     """Класс для категорий"""
@@ -72,6 +86,8 @@ class Category:
     def add_product(self, products):
         """ Метод в который передается объект класса Product и
         уже его записывает в приватный атрибут списка товаров."""
+        if not isinstance(products, Product):
+            raise TypeError
         self.__products.append(products)
         Category.category_count += 1
 
