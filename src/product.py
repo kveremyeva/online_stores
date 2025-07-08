@@ -64,7 +64,7 @@ class Product(CreationLoggerMixin, BaseProduct):
         """Сеттер для цены с проверкой и понижением если пользователь захочет понизить"""
         if new_price <= 0:
             print(f"Цена {new_price} - не должна быть нулевая или отрицательная")
-            return self.__price
+            return
 
         if new_price < self.__price:
             answer = input(f"Цена снижается с {self.__price} до {new_price}. Подтвердите понижение (y/n) \n")
