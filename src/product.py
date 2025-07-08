@@ -1,15 +1,55 @@
-class Product:
-    """Класс для продуктов"""
-    name: str
-    description: str
-    __price: float
-    quantity: int
+from abc import ABC, abstractmethod
 
+
+class BaseProduct(ABC):
+
+    @abstractmethod
     def __init__(self, name, description, price, quantity):
         self.name = name
         self.description = description
-        self.__price = price
+        self._price = price
         self.quantity = quantity
+
+    @property
+    @abstractmethod
+    def price(self):
+        """Геттер для цены"""
+        pass
+
+    @price.setter
+    @abstractmethod
+    def price(self, new_price):
+        """Сеттер для цены"""
+        pass
+
+    @abstractmethod
+    def __str__(self):
+        pass
+
+    @abstractmethod
+    def __add__(self, other):
+        pass
+
+
+class CreationLoggerMixin:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        args_repr = [repr(a) for a in args]
+        kwargs_repr = [f"{k}={v!r}" for k, v in kwargs.items()]
+        signature = ", ".join(args_repr + kwargs_repr)
+        print(f"{self.__class__.__name__}({signature})")
+
+
+class Product(CreationLoggerMixin, BaseProduct):
+    def __init__(self, name, description, price, quantity):
+        if not isinstance(price, (int, float)):
+            raise TypeError("Цена должна быть числом")
+        if not isinstance(quantity, int):
+            raise TypeError("Количество должно быть целым числом")
+
+        super().__init__(name, description, price, quantity)
+        self.__price = price
+
 
     @property
     def price(self):

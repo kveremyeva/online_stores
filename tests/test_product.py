@@ -1,7 +1,9 @@
+from unittest.mock import patch
+
 import pytest
 
 from src import product
-from src.product import Category, Product, LawnGrass, Smartphone
+from src.product import Category, Product, LawnGrass, Smartphone, BaseProduct, CreationLoggerMixin
 
 
 @pytest.fixture
@@ -157,3 +159,92 @@ def test_lawn_grass_creation():
     assert grass.country == "Нидерланды"
     assert grass.germination_period == 14
     assert grass.color == "Зеленый"
+
+
+
+def test_product_init():
+    product = Product("Продукт1", "Описание", 1000, 5)
+    assert product.name == "Продукт1"
+    assert product.description == "Описание"
+    assert product.price == 1000
+    assert product.quantity == 5
+
+def test_price_getter():
+    product = Product("Тест", "Описание", 1000, 5)
+    assert product.price == 1000
+
+def test_price_setter_increase():
+    product = Product("Тест", "Описание", 1000, 5)
+    with patch('builtins.input', return_value='y'):
+        product.price = 1500
+        assert product.price == 1500
+
+def test_price_setter_decrease():
+    product = Product("Тест", "Описание", 1000, 5)
+    with patch('builtins.input', return_value='y'):
+        product.price = 800
+        assert product.price == 800
+
+def test_price_setter_cancel():
+    product = Product("Тест", "Описание", 1000, 5)
+    with patch('builtins.input', return_value='n'):
+        product.price = 800
+        assert product.price == 1000
+
+def test_price_setter_invalid():
+    product = Product("Тест", "Описание", 1000, 5)
+    with patch('builtins.input', return_value='y'):
+        product.price = -100
+        assert product.price == 1000
+
+def test_new_product_method():
+    product_data = {
+        "name": "Новый продукт",
+        "description": "Описание",
+        "price": 2000,
+        "quantity": 10
+    }
+    new_product = Product.new_product(product_data)
+    assert new_product.name == "Новый продукт"
+    assert new_product.price == 2000
+    assert new_product.quantity == 10
+
+def test_str_method():
+    product = Product("Продукт", "Описание", 1000, 5)
+    expected = "Продукт, 1000 руб. Остаток: 5 шт."
+    assert str(product) == expected
+
+def test_add_method():
+    product1 = Product("Продукт1", "Описание", 1000, 5)
+    product2 = Product("Продукт2", "Описание", 2000, 3)
+    assert product1 + product2 == (1000 * 5) + (2000 * 3)
+
+def test_add_invalid_type():
+    product = Product("Продукт", "Описание", 1000, 5)
+    with pytest.raises(TypeError):
+        product + "не продукт"
+
+def test_creation_logger():
+    with patch('builtins.print') as mock_print:
+        Product("Тест", "Описание", 1000, 5)
+        mock_print.assert_called_with(
+            "Product('Тест', 'Описание', 1000, 5)"
+        )
+
+def test_invalid_price_type():
+    with pytest.raises(TypeError):
+        Product("Тест", "Описание", "не число", 5)
+
+def test_invalid_quantity_type():
+    with pytest.raises(TypeError):
+        Product("Тест", "Описание", 1000, "не число")
+
+
+def test_add_invalid_product():
+    category = Category("Категория", "Описание", [])
+
+    with pytest.raises(TypeError):
+        category.add_product("не продукт")
+
+    with pytest.raises(TypeError):
+        category.add_product(123)
