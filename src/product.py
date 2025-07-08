@@ -98,7 +98,6 @@ class Product(CreationLoggerMixin, BaseProduct):
 class Smartphone(Product):
     """Класс для управления смартфонами."""
     def __init__(self, name, description, __price, quantity, efficiency, model, memory, color):
-        """ Метод для """
         super().__init__(name, description, __price, quantity)
         self.efficiency = efficiency
         self.model = model
