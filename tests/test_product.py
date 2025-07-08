@@ -35,10 +35,6 @@ def test_product_min_price():
     assert product.price == 0.0
 
 
-def test_product_min_quantity():
-    product = Product("Samsung Galaxy S23 Ultra (2025)", "Description", 100.0, 0)
-    assert product.quantity == 0
-
 
 @pytest.fixture
 def category_creation():
@@ -121,13 +117,6 @@ def test_add_product():
     product2 = Product("Iphone 15", "512GB, Gray space", 210000.0, 8)
     result = product1 + product2
     assert result == 3360000
-
-
-def test_add_zero_quantity():
-    product1 = Product("Iphone 15", "512GB, Gray space", 210000.0, 8)
-    product2 = Product("Iphone 15", "512GB, Gray space", 210000.0, 0)
-    result = product1 + product2
-    assert result == 1680000
 
 
 def test_smartphone_creation():
@@ -248,3 +237,30 @@ def test_add_invalid_product():
 
     with pytest.raises(TypeError):
         category.add_product(123)
+
+
+def test_zero_quantity():
+    with pytest.raises(ValueError) as e:
+        Product("Товар", "Описание", 1000, 0)
+
+
+def test_middle_price_with_products():
+    product1 = Product("Продукт1", "Описание", 1000, 5)
+    product2 = Product("Продукт2", "Описание", 2000, 3)
+
+    category = Category("Категория", "Описание", [product1, product2])
+
+    # Вычисляем ожидаемое среднее значение
+    expected_average = (1000 * 5 + 2000 * 3) / (5 + 3)
+    assert category.middle_price() == expected_average
+
+
+def test_middle_price_empty_category():
+    category = Category("Категория", "Описание", [])
+    assert category.middle_price() == 0.0
+
+
+def test_middle_price_single_product():
+    product = Product("Продукт", "Описание", 1500, 10)
+    category = Category("Категория", "Описание", [product])
+    assert category.middle_price() == 1500.0
