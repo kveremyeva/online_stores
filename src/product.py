@@ -32,6 +32,7 @@ class BaseProduct(ABC):
 
 
 class CreationLoggerMixin:
+    """Миксин для логирования создания объектов"""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         args_repr = [repr(a) for a in args]
@@ -46,6 +47,8 @@ class Product(CreationLoggerMixin, BaseProduct):
             raise TypeError("Цена должна быть числом")
         if not isinstance(quantity, int):
             raise TypeError("Количество должно быть целым числом")
+        if quantity == 0:
+            raise ValueError("Товар с нулевым количеством не может быть добавлен")
 
         super().__init__(name, description, price, quantity)
         self.__price = price
@@ -61,7 +64,7 @@ class Product(CreationLoggerMixin, BaseProduct):
         """Сеттер для цены с проверкой и понижением если пользователь захочет понизить"""
         if new_price <= 0:
             print(f"Цена {new_price} - не должна быть нулевая или отрицательная")
-            return self.__price
+            return
 
         if new_price < self.__price:
             answer = input(f"Цена снижается с {self.__price} до {new_price}. Подтвердите понижение (y/n) \n")
@@ -93,6 +96,7 @@ class Product(CreationLoggerMixin, BaseProduct):
             raise TypeError
 
 class Smartphone(Product):
+    """Класс для управления смартфонами."""
     def __init__(self, name, description, __price, quantity, efficiency, model, memory, color):
         super().__init__(name, description, __price, quantity)
         self.efficiency = efficiency
@@ -101,6 +105,7 @@ class Smartphone(Product):
         self.color = color
 
 class LawnGrass(Product):
+    """ Класс для управления газонной травой"""
     def __init__(self, name, description, __price, quantity, country, germination_period, color):
         super().__init__(name, description, __price, quantity)
         self.country = country
@@ -142,3 +147,16 @@ class Category:
 
     def __str__(self):
         return f"{self.name}, количество продуктов: {self.product_count} шт."
+
+
+
+    def middle_price(self) -> float:
+        """ Подсчитывает средний ценник всех товаров"""
+        try:
+            if not self.__products:
+                raise ValueError("В категории нет товаров")
+            total_price = sum(product.price * product.quantity for product in self.__products)
+            total_quantity = sum(product.quantity for product in self.__products)
+            return total_price / total_quantity
+        except (ValueError, ZeroDivisionError):
+            return 0.0
