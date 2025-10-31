@@ -1,15 +1,58 @@
-class Product:
-    """Класс для продуктов"""
-    name: str
-    description: str
-    __price: float
-    quantity: int
+from abc import ABC, abstractmethod
 
+
+class BaseProduct(ABC):
+
+    @abstractmethod
     def __init__(self, name, description, price, quantity):
         self.name = name
         self.description = description
-        self.__price = price
+        self._price = price
         self.quantity = quantity
+
+    @property
+    @abstractmethod
+    def price(self):
+        """Геттер для цены"""
+        pass
+
+    @price.setter
+    @abstractmethod
+    def price(self, new_price):
+        """Сеттер для цены"""
+        pass
+
+    @abstractmethod
+    def __str__(self):
+        pass
+
+    @abstractmethod
+    def __add__(self, other):
+        pass
+
+
+class CreationLoggerMixin:
+    """Миксин для логирования создания объектов"""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        args_repr = [repr(a) for a in args]
+        kwargs_repr = [f"{k}={v!r}" for k, v in kwargs.items()]
+        signature = ", ".join(args_repr + kwargs_repr)
+        print(f"{self.__class__.__name__}({signature})")
+
+
+class Product(CreationLoggerMixin, BaseProduct):
+    def __init__(self, name, description, price, quantity):
+        if not isinstance(price, (int, float)):
+            raise TypeError("Цена должна быть числом")
+        if not isinstance(quantity, int):
+            raise TypeError("Количество должно быть целым числом")
+        if quantity == 0:
+            raise ValueError("Товар с нулевым количеством не может быть добавлен")
+
+        super().__init__(name, description, price, quantity)
+        self.__price = price
+
 
     @property
     def price(self):
@@ -21,7 +64,7 @@ class Product:
         """Сеттер для цены с проверкой и понижением если пользователь захочет понизить"""
         if new_price <= 0:
             print(f"Цена {new_price} - не должна быть нулевая или отрицательная")
-            return self.__price
+            return
 
         if new_price < self.__price:
             answer = input(f"Цена снижается с {self.__price} до {new_price}. Подтвердите понижение (y/n) \n")
@@ -47,11 +90,27 @@ class Product:
 
     def __add__(self, other):
         """Метод возвращает результат сложения сумм всех товаров двух категорий"""
-        if isinstance(other, Product):
+        if type(other) == type(self):
             return (self.__price * self.quantity) + (other.__price * other.quantity)
         else:
-            raise ValueError("Other не является объектом класса Product")
+            raise TypeError
 
+class Smartphone(Product):
+    """Класс для управления смартфонами."""
+    def __init__(self, name, description, __price, quantity, efficiency, model, memory, color):
+        super().__init__(name, description, __price, quantity)
+        self.efficiency = efficiency
+        self.model = model
+        self.memory = memory
+        self.color = color
+
+class LawnGrass(Product):
+    """ Класс для управления газонной травой"""
+    def __init__(self, name, description, __price, quantity, country, germination_period, color):
+        super().__init__(name, description, __price, quantity)
+        self.country = country
+        self.germination_period = germination_period
+        self.color = color
 
 class Category:
     """Класс для категорий"""
@@ -72,6 +131,8 @@ class Category:
     def add_product(self, products):
         """ Метод в который передается объект класса Product и
         уже его записывает в приватный атрибут списка товаров."""
+        if not isinstance(products, Product):
+            raise TypeError
         self.__products.append(products)
         Category.category_count += 1
 
@@ -86,3 +147,16 @@ class Category:
 
     def __str__(self):
         return f"{self.name}, количество продуктов: {self.product_count} шт."
+
+
+
+    def middle_price(self) -> float:
+        """ Подсчитывает средний ценник всех товаров"""
+        try:
+            if not self.__products:
+                raise ValueError("В категории нет товаров")
+            total_price = sum(product.price * product.quantity for product in self.__products)
+            total_quantity = sum(product.quantity for product in self.__products)
+            return total_price / total_quantity
+        except (ValueError, ZeroDivisionError):
+            return 0.0
